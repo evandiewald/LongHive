@@ -18,8 +18,8 @@ int serialData;
 float serialOut;
 float weight; //Nathan
 #define calibration_factor -7050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
-#define DOUT  3 //N
-#define CLK  2 //N
+#define DOUT  13 //N
+#define CLK  8 //N
 HX711 scale; //N
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
@@ -205,14 +205,14 @@ void setup()
     scale.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
     scale.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
     //For Scale, debugging
-    Serial.println("Add book");
-    delay(10000);
-    weight = scale.get_units(); //Nathan
-    for(int i = 1;i<15;i++){
-      weight = scale.get_units() + weight;
-    }
-    weight = weight/15;
-    Serial.println(weight);
+    //Serial.println("Add book");
+    //delay(10000);
+    //weight = scale.get_units(); //Nathan
+    //for(int i = 1;i<15;i++){
+    //  weight = scale.get_units() + weight;
+    //}
+    //weight = weight/15;
+    //Serial.println(weight);
     ////////////////// 
   
     // Start job (sending automatically starts OTAA too)
@@ -373,6 +373,15 @@ void do_send(osjob_t *j) {
       }
     }
     lpp.addAnalogOutput(4, serialOut);
+
+    //Scale, Nathan
+    for(int i = 1;i<16;i++){
+      weight = scale.get_units() + weight;
+    }
+    weight = weight/15;
+    Serial.println(weight);
+
+    lpp.addAnalogOutput(5, weight);
 
     //LMIC_setTxData2(1, mydata, sizeof(mydata) - 1, 0);
     LMIC_setTxData2(1, lpp.getBuffer(), lpp.getSize(), 0);
