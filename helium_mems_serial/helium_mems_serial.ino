@@ -13,8 +13,10 @@
 #include <LPS22HHSensor.h>
 #include <STTS751Sensor.h>
 #include <HTS221Sensor.h>
+#include <HX711.h> //Nathan
 int serialData;
 float serialOut;
+float weight; //Nathan
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
 static const u1_t PROGMEM APPEUI[8] = {0xCB, 0x09, 0xC8, 0xF2, 0xCF, 0xCB, 0xD5, 0xD0};
@@ -130,6 +132,13 @@ HardwareSerial Serial1(PA10, PA9);
 #endif
 
 
+//For Scale, Nathan
+#define calibration_factor -7050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
+#define DOUT  3
+#define CLK  2
+HX711 scale;
+///////////////////
+
 void setup()
 {
      //Initialize serial port for user communication
@@ -193,11 +202,21 @@ void setup()
     LMIC_setDrTxpow(DR_SF8, 20);
     // Sub-band 2 - Helium Network
     LMIC_selectSubBand(1); // zero indexed
-  
+
+    //For Scale
+    scale.begin(DOUT, CLK);
+    scale.set_scale(calibration_factor); //This value is obtained by using the SparkFun_HX711_Calibration sketch
+    scale.tare(); //Assuming there is no weight on the scale at start up, reset the scale to 0
+    //For Scale, debugging
+    weight = scale.get_units(); //Nathan
+    for(int i = 1;i<15;i++){
+      weight = scale.get_units() + weight;
+    }
+    weight = weight/15;
+    ////////////////////
+    
     // Start job (sending automatically starts OTAA too)
     do_send(&sendjob);
-
-  
   
 }
 
@@ -355,6 +374,14 @@ void do_send(osjob_t *j) {
       }
     }
     lpp.addAnalogOutput(4, serialOut);
+
+    weight = scale.get_units(); //Nathan
+    for(int i = 1;i<15;i++){
+      weight = scale.get_units() + weight;
+    }
+    weight = weight/15;
+    lpp.addAnalogOutput(5, weight); //Nathan
+    
 
     //LMIC_setTxData2(1, mydata, sizeof(mydata) - 1, 0);
     LMIC_setTxData2(1, lpp.getBuffer(), lpp.getSize(), 0);
