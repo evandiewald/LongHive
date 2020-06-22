@@ -9,7 +9,7 @@ import librosa
 import pyserial
 import time
 
-ser = serial.Serial('/dev/ttyUSB0', baudrate=9600)
+ser = serial.Serial('/dev/ttyUSB0', baudrate=115200)
 
 # make recording
 RESPEAKER_RATE = 16000
