@@ -1,15 +1,86 @@
 # LongHive
 
-Code for a smart beehive based on LongFi networking. Integrates temperature, humidity, & pressure data, as well as a deep learning-based audio classifier for automatically detecting whether or not a hive has a queen with 89% accuracy on a test set. The hardware consists of a Raspberry Pi (for running the tensorflow lite interpreter and dual microphone input) and ST-LRWAN development board.
+Code for a smart beehive based on LongFi networking. Integrates temperature, humidity, & pressure data, as well as a deep learning-based audio classifier for automatically detecting whether or not a hive has a queen with 89% accuracy on a test set. The hardware consists of a Raspberry Pi 3/4 (for running the Tensorflow Lite interpreter based on dual microphone input) and ST-LRWAN development board.
 
 ## STM Board Code
-The .ino script is uploaded to the board. You should only need to change the AppKey, AppEUI, and DevEUI at the top. It works with the X-NUCLEO MEMS shield and listens to the serial port for the classification, which is converted to an analog input in the CayenneLPP packet. 
-**Still need to add weight sensors
+The [.ino script](stm_test1/stm_test1.ino) is uploaded to the board with the Arduino IDE. You should only need to change the AppKey, AppEUI, and DevEUI at the top. It works with the X-NUCLEO IKS01A3 MEMS shield and listens to the serial port for the classification (0: no classification, 1: no queen, 2: queen), which is converted to an analog input in the CayenneLPP packet. 
+*Still need to add weight sensors
 
-## Python Code (for Raspberry Pi)
-The python code runs a tensorflow lite classifier on the RPi. It works with the Seeed ReSpeaker 2-Mics Pi HAT to classify audio signals (bees buzzing) based on a pre-trained CNN. Code is pretty processing-intensive (generating the MFCC plots is a lot on the Pi) and definitely a point of future optimization. The CNN architecture is below. Keep in mind that installing dependencies on the RPi (ARM) is a serious pain...
+## Raspberry Pi Setup
+Setup was tested on a Raspberry Pi 3B/4B running the latest version of 32-bit Raspbian Buster. The ReSpeaker 2 Hat is installed on the GPIO pins and the Pi will communicate with the LoRaWAN board via the USB serial port. 
 
-I'll also upload a script for standard venvs and my code used to train the network. 
+1. Update, install the required dependencies, and reboot
+
+```
+$ sudo apt-get install virtualenv python-pyaudio python3-scipy
+$ sudo apt libatlas-base-dev
+$ sudo apt-get update
+$ sudo apt-get upgrade
+$ git clone https://github.com/respeaker/seeed-voicecard.git
+$ cd seeed-voicecard
+$ sudo ./install.sh
+$ reboot
+```
+
+2. Check that the ReSpeaker software was installed correctly and take note of the device index (this is the `RESPEAKER_INDEX` field in `classify_buzz_rpi.py`), taken from the [SeeedStudio docs](https://wiki.seeedstudio.com/ReSpeaker_2_Mics_Pi_HAT/)
+
+```
+~/seeed-voicecard $ aplay -l
+**** List of PLAYBACK Hardware Devices ****
+card 0: ALSA [bcm2835 ALSA], device 0: bcm2835 ALSA [bcm2835 ALSA]
+  Subdevices: 8/8
+  Subdevice #0: subdevice #0
+  Subdevice #1: subdevice #1
+  Subdevice #2: subdevice #2
+  Subdevice #3: subdevice #3
+  Subdevice #4: subdevice #4
+  Subdevice #5: subdevice #5
+  Subdevice #6: subdevice #6
+  Subdevice #7: subdevice #7
+card 0: ALSA [bcm2835 ALSA], device 1: bcm2835 ALSA [bcm2835 IEC958/HDMI]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: seeed2micvoicec [seeed-2mic-voicecard], device 0: bcm2835-i2s-wm8960-hifi wm8960-hifi-0 []
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+```
+
+3. Clone this repo, setup the virtualenv, and install dependencies from `requirements.txt`
+
+```
+$ git clone https://github.com/evandiewald/LongHive
+$ cd LongHive
+
+$ virtualenv venv --python=python3.7
+source venv/bin/activate
+```
+
+:warning: Raspbian is not going to want to let you install scipy without root privileges. Before installing `requirements.txt`, I had to download and install the wheel directly by using
+
+```
+$ wget https://www.piwheels.org/simple/scipy/scipy-1.5.0rc2-cp37-cp37m-linux_armv7l.whl
+$ pip3 install scipy-1.5.0rc2-cp37-cp37m-linux_armv7l.whl
+```
+
+Next, install the rest of the dependencies with
+
+`$ pip3 install -r requirements.txt`
+
+4. Finally, you may have to update `classify_buzz_rpi.py` to adjust the serial port (`dev/ttyUSB0`) and/or `RESPEAKER_INDEX` to match the port(s) your Pi is using. Run the classifier with
+
+`$ python3 classify_buzz_rpi.py`
+
+There are going to be a ton of error messages (it's a bit of a hack), but you'll know it's working when you see outputs like 
+
+```
+* recording
+* done
+...
+No queen detected
+```
+
+## CNN Architecture
+The Python code runs a tensorflow lite classifier on the RPi. It works with the Seeed ReSpeaker 2-Mics Pi HAT to classify audio signals (bees buzzing) based on a pre-trained CNN. The program is pretty processing-intensive (generating the MFCC plots is a lot on the Pi) and definitely a point of future optimization. The CNN architecture from `train_spectral_cnn.py` is outlined below. 
 
 CNN Architecture: 
 
