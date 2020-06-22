@@ -6,7 +6,7 @@ import wave
 import matplotlib.pyplot as plt
 import librosa.display
 import librosa
-import pyserial
+import serial
 import time
 
 ser = serial.Serial('/dev/ttyUSB0', baudrate=115200)
