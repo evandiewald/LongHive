@@ -13,6 +13,7 @@ I'll also upload a script for standard venvs and my code used to train the netwo
 
 CNN Architecture: 
 
+```
 Model: "sequential"
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #   
@@ -62,3 +63,4 @@ dense_2 (Dense)              (None, 2)                 34
 Total params: 144,082
 Trainable params: 144,082
 Non-trainable params: 0
+```
