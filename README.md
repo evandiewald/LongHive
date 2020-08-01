@@ -1,10 +1,11 @@
 # LongHive
 
-Code for a smart beehive based on LongFi networking. Integrates temperature, humidity, & pressure data, as well as a deep learning-based audio classifier for automatically detecting whether or not a hive has a queen with 89% accuracy on a test set. The hardware consists of a Raspberry Pi 3/4 (for running the Tensorflow Lite interpreter based on dual microphone input) and ST-LRWAN development board.
+*Check out our [project blog](https://www.hackster.io/354300/longhive-12d952), which was entered in the Helium #IoTforGood Contest on Hackster.io!*
 
-## STM Board Code
-The [.ino script](stm_test1/stm_test1.ino) is uploaded to the board with the Arduino IDE. You should only need to change the AppKey, AppEUI, and DevEUI at the top. It works with the X-NUCLEO IKS01A3 MEMS shield and listens to the serial port for the classification (0: no classification, 1: no queen, 2: queen), which is converted to an analog input in the CayenneLPP packet. 
-*Still need to add weight sensors
+Code for a smart beehive based on LongFi networking via the Helium Network. Integrates temperature, humidity, CO2, & pressure data, as well as a deep learning-based audio classifier that has been trained to detect whether or not a hive has a queen with 89% accuracy on a test set. The hardware consists of a Raspberry Pi 3/4 (for running the Tensorflow Lite interpreter based on dual microphone input), ST-LRWAN development board (from the [Helium Developer Kit](https://developer.helium.com/devices/devkit)), and various environmental sensors.
+
+## ST-LRWAN Development Board Code
+The [.cpp script](main.cpp) is uploaded to the board via the PlatformIO extension for VS Code. [Here](https://developer.helium.com/resources/getting-started-with-platformio) is a robust tutorial for getting started with PIO and the Helium Developer Kit. You should only need to change the AppKey, AppEUI, and DevEUI to match what you have in the Helium Console. For additional details and hardware schematics, please refer to the [project blog](https://www.hackster.io/354300/longhive-12d952).
 
 ## Raspberry Pi Setup
 Setup was tested on a Raspberry Pi 3B/4B running the latest version of 32-bit Raspbian Buster. The ReSpeaker 2 Hat is installed on the GPIO pins and the Pi will communicate with the LoRaWAN board via the USB serial port. 
