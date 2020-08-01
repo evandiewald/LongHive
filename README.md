@@ -81,7 +81,7 @@ No queen detected
 ```
 
 ## CNN Architecture
-The Python code runs a tensorflow lite classifier on the RPi. It works with the Seeed ReSpeaker 2-Mics Pi HAT to classify audio signals (bees buzzing) based on a pre-trained CNN. The program is pretty processing-intensive (generating the MFCC plots is a lot on the Pi) and definitely a point of future optimization. The CNN architecture from `train_spectral_cnn.py` is outlined below. 
+The Python code runs a TensorFlow Lite classifier on the RPi. It works with the Seeed ReSpeaker 2-Mics Pi HAT to classify audio signals (bees buzzing) based on a pre-trained CNN (dataset obtained from [Kaggle](https://www.kaggle.com/chrisfilo/to-bee-or-no-to-bee)). The program is pretty processing-intensive (generating the MFCC plots is a lot on the Pi) and definitely a point of future optimization. The CNN architecture from `train_spectral_cnn.py` is outlined below. 
 
 CNN Architecture: 
 
