@@ -42,16 +42,16 @@ Adafruit_CCS811 ccs;
 
 
 // This is the "App EUI" in Helium. Make sure it is little-endian (lsb).
-static const u1_t PROGMEM APPEUI[8] = {0xC3, 0x52, 0x96, 0x3C, 0x99, 0x91, 0x55, 0xA2};
+static const u1_t PROGMEM APPEUI[8] = {INSERT_HERE};
 void os_getArtEui(u1_t *buf) {memcpy_P(buf, APPEUI, 8); }
 
 // This should also be in little endian format
 // These are user configurable values and Helium console permits anything
-static const u1_t PROGMEM DEVEUI[8] = {0x3D, 0x01, 0xC7, 0xB7, 0xC7, 0x9C, 0xC7, 0x6C};
+static const u1_t PROGMEM DEVEUI[8] = {INSERT_HERE};
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 
 // This is the "App Key" in Helium. It is big-endian (msb).
-static const u1_t PROGMEM APPKEY[16] = {0xF3, 0xA8, 0x7B, 0x54, 0x2A, 0xE8, 0x8B, 0x54, 0xE3, 0xC2, 0x40, 0x6F, 0x6C, 0x9B, 0x20, 0xCC};
+static const u1_t PROGMEM APPKEY[16] = {INSERT_HERE};
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
 static osjob_t sendjob;
